@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Horizon Festival - Entradas</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuración personalizada de Tailwind -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            purple: '#8b5cf6',
+                            pink: '#ec4899',
+                            orange: '#f97316', // Nuevo color naranja
+                            yellow: '#eab308', // Nuevo color amarillo para el degradado
+                            dark: '#0f172a',
+                            darker: '#020617'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 3s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 20px rgba(139, 92, 246, 0.2)' },
+                            '50%': { boxShadow: '0 0 40px rgba(236, 72, 153, 0.4)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Estilos base */
+        body {
+            background-color: #020617;
+            color: white;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+            cursor: default; /* Opcional: podrías poner 'none' si quisieras un cursor totalmente custom */
+        }
+        
+        .glass-card {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(to right, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* CLASES PARA EL EFECTO DE TRANSICIÓN DE SECCIONES */
+        .scroll-section {
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            opacity: 0.3;
+            transform: scale(0.9);
+            filter: blur(4px);
+        }
+
+        .scroll-section.active-section {
+            opacity: 1;
+            transform: scale(1);
+            filter: blur(0);
+        }
+
+        /* Modal Transitions */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 300ms, transform 300ms; }
+        .modal-exit { opacity: 1; transform: scale(1); }
+        .modal-exit-active { opacity: 0; transform: scale(0.95); transition: opacity 200ms, transform 200ms; }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex flex-col relative">
+
+    <!-- Cursor Glow Effect (Modificado) -->
+    <!-- Se cambió el degradado a naranja/amarillo y se aumentó la opacidad de /20 a /40 para más brillo -->
+    <div id="cursor-glow" class="fixed top-0 left-0 w-[600px] h-[600px] bg-gradient-to-r from-brand-orange/40 to-brand-yellow/40 rounded-full blur-[120px] pointer-events-none transition-transform duration-150 ease-out z-0 mix-blend-screen hidden md:block -ml-[300px] -mt-[300px]" style="transform: translate(-100%, -100%);"></div>
+
+    <!-- Fondo con formas abstractas (Parallax Background) -->
+    <div class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+        <div class="absolute top-0 left-1/4 w-96 h-96 bg-brand-purple rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-float"></div>
+        <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-brand-pink rounded-full mix-blend-multiply filter blur-[128px] opacity-20 animate-float" style="animation-delay: 2s;"></div>
+        <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-blue-900 rounded-full mix-blend-multiply filter blur-[150px] opacity-10"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="w-full py-6 px-4 md:px-8 flex justify-between items-center glass-card sticky top-0 z-40 border-b border-white/10 transition-all duration-300" id="navbar">
+        <div class="flex items-center gap-2">
+            <i class="fa-solid fa-music text-brand-pink text-2xl"></i>
+            <span class="font-bold text-xl tracking-wide">NEON<span class="text-brand-purple">HORIZON</span></span>
+        </div>
+        <div class="hidden md:flex gap-6 text-sm font-semibold text-slate-300">
+            <a href="#hero" class="hover:text-white transition-colors">Inicio</a>
+            <a href="#lineup" class="hover:text-white transition-colors">Lineup</a>
+            <a href="#experience" class="hover:text-white transition-colors">Experiencia</a>
+            <a href="#tickets" class="text-brand-pink hover:text-brand-purple transition-colors">Entradas</a>
+        </div>
+        <button class="md:hidden text-white text-xl">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </nav>
+
+    <!-- Hero Section (Ahora con ID para el scroll) -->
+    <section id="hero" class="min-h-[90vh] flex flex-col justify-center items-center text-center container mx-auto px-4 scroll-section active-section relative z-10">
+        <span class="inline-block py-1 px-3 rounded-full bg-white/10 border border-white/20 text-xs font-semibold tracking-wider mb-6 text-brand-pink">
+            25 DE NOVIEMBRE, 2025 • CIUDAD DE MÉXICO
+        </span>
+        <h1 class="text-5xl md:text-8xl font-extrabold mb-6 leading-tight tracking-tight">
+            VIVE LA <br> <span class="gradient-text">MÚSICA DEL FUTURO</span>
+        </h1>
+        <p class="text-slate-400 max-w-2xl text-lg mb-10 mx-auto">
+            Únete a más de 50,000 personas en el festival de música electrónica más inmersivo del año. Arte, tecnología y sonido en un solo lugar.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#tickets" class="bg-gradient-to-r from-brand-purple to-brand-pink hover:from-purple-600 hover:to-pink-600 text-white px-8 py-4 rounded-full font-bold shadow-lg shadow-purple-500/30 transition-all transform hover:scale-105">
+                Comprar Entradas
+            </a>
+            <a href="#lineup" class="glass-card px-8 py-4 rounded-full font-bold hover:bg-white/10 transition-all text-center">
+                Ver Lineup Completo
+            </a>
+        </div>
+        
+        <!-- Indicador de Scroll -->
+        <div class="absolute bottom-10 animate-bounce text-slate-500">
+            <i class="fa-solid fa-chevron-down text-2xl"></i>
+        </div>
+    </section>
+
+    <!-- Nueva Sección: Lineup -->
+    <section id="lineup" class="min-h-screen flex flex-col justify-center py-20 container mx-auto px-4 scroll-section relative z-10">
+        <h2 class="text-4xl md:text-6xl font-bold text-center mb-4">HEADLINERS</h2>
+        <p class="text-center text-brand-purple mb-16 uppercase tracking-[0.2em]">Los mejores DJs del mundo</p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Artist Card 1 -->
+            <div class="glass-card group relative overflow-hidden rounded-2xl h-80 cursor-pointer">
+                <!-- Placeholder de imagen con degradado -->
+                <div class="absolute inset-0 bg-gradient-to-br from-purple-900 to-black group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                
+                <div class="absolute bottom-0 left-0 p-6 w-full">
+                    <h3 class="text-3xl font-bold text-white mb-1 transform translate-y-0 group-hover:-translate-y-2 transition-transform">CYBER PUNK</h3>
+                    <p class="text-brand-pink text-sm opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">Techno / Acid</p>
+                </div>
+            </div>
+
+            <!-- Artist Card 2 -->
+            <div class="glass-card group relative overflow-hidden rounded-2xl h-80 cursor-pointer md:mt-12">
+                <div class="absolute inset-0 bg-gradient-to-bl from-pink-900 to-black group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                
+                <div class="absolute bottom-0 left-0 p-6 w-full">
+                    <h3 class="text-3xl font-bold text-white mb-1 transform translate-y-0 group-hover:-translate-y-2 transition-transform">NEON WAVE</h3>
+                    <p class="text-brand-pink text-sm opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">Synthwave / Retro</p>
+                </div>
+            </div>
+
+            <!-- Artist Card 3 -->
+            <div class="glass-card group relative overflow-hidden rounded-2xl h-80 cursor-pointer">
+                <div class="absolute inset-0 bg-gradient-to-tr from-blue-900 to-black group-hover:scale-110 transition-transform duration-700"></div>
+                <div class="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors"></div>
+                
+                <div class="absolute bottom-0 left-0 p-6 w-full">
+                    <h3 class="text-3xl font-bold text-white mb-1 transform translate-y-0 group-hover:-translate-y-2 transition-transform">ECHO VOID</h3>
+                    <p class="text-brand-pink text-sm opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300">Deep House</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+            <p class="text-slate-400 text-sm md:text-base max-w-2xl mx-auto">
+                + 40 artistas internacionales distribuidos en 4 escenarios inmersivos.
+            </p>
+        </div>
+    </section>
+
+    <!-- Nueva Sección: Experiencia -->
+    <section id="experience" class="min-h-screen flex items-center py-20 container mx-auto px-4 scroll-section relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div class="order-2 md:order-1 space-y-8">
+                <h2 class="text-4xl md:text-5xl font-bold leading-tight">MÁS QUE MÚSICA, <br><span class="gradient-text">UNA REALIDAD ALTERNA</span></h2>
+                <p class="text-slate-400 text-lg">
+                    Sumérgete en instalaciones de arte digital, zonas de relajación con audio binaural y experiencias gastronómicas de otro planeta.
+                </p>
+                
+                <div class="space-y-4">
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-brand-purple/20 rounded-lg text-brand-purple">
+                            <i class="fa-solid fa-vr-cardboard text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">Zona VR</h4>
+                            <p class="text-sm text-slate-400">Viaja a mundos digitales entre conciertos.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-4">
+                        <div class="p-3 bg-brand-pink/20 rounded-lg text-brand-pink">
+                            <i class="fa-solid fa-martini-glass-citrus text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-lg">Gastro-Bar Neón</h4>
+                            <p class="text-sm text-slate-400">Cócteles moleculares y comida futurista.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Galería Grid -->
+            <div class="order-1 md:order-2 grid grid-cols-2 gap-4">
+                <div class="space-y-4 mt-8">
+                    <div class="h-40 bg-slate-800 rounded-2xl overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-purple-500/50 to-transparent"></div>
+                    </div>
+                    <div class="h-60 bg-slate-800 rounded-2xl overflow-hidden relative animate-pulse-glow">
+                        <div class="absolute inset-0 bg-gradient-to-t from-pink-500/50 to-transparent"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fa-regular fa-image text-4xl opacity-20"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <div class="h-60 bg-slate-800 rounded-2xl overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-blue-500/50 to-transparent"></div>
+                    </div>
+                    <div class="h-40 bg-slate-800 rounded-2xl overflow-hidden relative">
+                        <div class="absolute inset-0 bg-gradient-to-t from-indigo-500/50 to-transparent"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Tickets (Existente) -->
+    <section id="tickets" class="min-h-screen py-20 flex flex-col justify-center container mx-auto px-4 scroll-section relative z-10">
+        <h2 class="text-4xl md:text-5xl font-bold text-center mb-12">ELIGE TU <span class="text-brand-purple">DESTINO</span></h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto w-full">
+            
+            <!-- Ticket: General -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col relative group hover:-translate-y-2 transition-transform duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-slate-600 rounded-t-2xl group-hover:bg-slate-400 transition-colors"></div>
+                <h3 class="text-2xl font-bold mb-2">General</h3>
+                <p class="text-slate-400 text-sm mb-6">Acceso a todos los escenarios principales.</p>
+                <div class="text-4xl font-bold mb-6">$85 <span class="text-base font-normal text-slate-500">/pers</span></div>
+                
+                <ul class="space-y-3 mb-8 text-slate-300 text-sm flex-grow">
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-green-400"></i> Acceso al Festival (2 días)</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-green-400"></i> Áreas de comida</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-green-400"></i> Estaciones de carga</li>
+                </ul>
+
+                <button onclick="openModal('General', 85)" class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black font-semibold transition-all duration-300">
+                    Seleccionar
+                </button>
+            </div>
+
+            <!-- Ticket: VIP (Destacado) -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col relative transform md:-translate-y-4 border-brand-purple shadow-2xl shadow-purple-900/20 group hover:-translate-y-6 transition-transform duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-purple to-brand-pink rounded-t-2xl"></div>
+                <div class="absolute top-4 right-4 bg-brand-purple text-xs font-bold px-2 py-1 rounded">POPULAR</div>
+                
+                <h3 class="text-2xl font-bold mb-2 text-white">VIP Experience</h3>
+                <p class="text-slate-400 text-sm mb-6">Mejores vistas y comodidad premium.</p>
+                <div class="text-4xl font-bold mb-6">$180 <span class="text-base font-normal text-slate-500">/pers</span></div>
+                
+                <ul class="space-y-3 mb-8 text-slate-300 text-sm flex-grow">
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-pink"></i> Todo lo de General</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-pink"></i> Entrada Rápida (Fast Pass)</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-pink"></i> Zona VIP elevada</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-brand-pink"></i> Baños privados premium</li>
+                </ul>
+
+                <button onclick="openModal('VIP Experience', 180)" class="w-full py-3 rounded-xl bg-gradient-to-r from-brand-purple to-brand-pink hover:shadow-lg hover:shadow-purple-500/40 text-white font-bold transition-all duration-300">
+                    Seleccionar
+                </button>
+            </div>
+
+            <!-- Ticket: Backstage -->
+            <div class="glass-card rounded-2xl p-8 flex flex-col relative group hover:-translate-y-2 transition-transform duration-300">
+                <div class="absolute top-0 left-0 w-full h-1 bg-yellow-500 rounded-t-2xl group-hover:bg-yellow-400 transition-colors"></div>
+                <h3 class="text-2xl font-bold mb-2">Backstage</h3>
+                <p class="text-slate-400 text-sm mb-6">La experiencia definitiva para fans.</p>
+                <div class="text-4xl font-bold mb-6">$350 <span class="text-base font-normal text-slate-500">/pers</span></div>
+                
+                <ul class="space-y-3 mb-8 text-slate-300 text-sm flex-grow">
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-yellow-500"></i> Acceso Total VIP</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-yellow-500"></i> Tour Backstage</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-yellow-500"></i> Meet & Greet Artistas</li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-check text-yellow-500"></i> Barra libre Premium</li>
+                </ul>
+
+                <button onclick="openModal('Backstage', 350)" class="w-full py-3 rounded-xl border border-white/20 hover:bg-white hover:text-black font-semibold transition-all duration-300">
+                    Seleccionar
+                </button>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-white/10 bg-black/50 py-12 scroll-section relative z-10">
+        <div class="container mx-auto px-4 text-center">
+            <div class="flex justify-center gap-6 mb-8">
+                <a href="#" class="text-2xl text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" class="text-2xl text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-twitter"></i></a>
+                <a href="#" class="text-2xl text-slate-400 hover:text-white transition-colors"><i class="fa-brands fa-tiktok"></i></a>
+            </div>
+            <p class="text-slate-500 text-sm">© 2025 Neon Horizon Festival. Todos los derechos reservados.</p>
+        </div>
+    </footer>
+
+    <!-- Modal de Compra (Overlay) -->
+    <div id="checkoutModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 transition-opacity duration-300 opacity-0">
+        <!-- Modal Content -->
+        <div class="glass-card w-full max-w-md rounded-2xl overflow-hidden shadow-2xl relative transform transition-all duration-300 scale-95" id="modalContent">
+            
+            <!-- Header del Modal -->
+            <div class="p-6 border-b border-white/10 flex justify-between items-center bg-white/5">
+                <h3 class="text-xl font-bold">Resumen de Compra</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Body del Modal -->
+            <div class="p-6">
+                <!-- Resumen Ticket -->
+                <div class="flex justify-between items-start mb-6 bg-white/5 p-4 rounded-lg">
+                    <div>
+                        <p class="text-xs text-slate-400 uppercase tracking-wide">Tipo de entrada</p>
+                        <h4 id="modalTicketType" class="text-lg font-bold text-brand-pink">General</h4>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-xs text-slate-400 uppercase tracking-wide">Precio unitario</p>
+                        <p id="modalTicketPrice" class="font-mono text-lg">$85</p>
+                    </div>
+                </div>
+
+                <!-- Formulario -->
+                <form id="purchaseForm" onsubmit="handlePurchase(event)" class="space-y-4">
+                    
+                    <!-- Cantidad -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Cantidad</label>
+                        <div class="flex items-center gap-4">
+                            <button type="button" onclick="adjustQuantity(-1)" class="w-10 h-10 rounded-full border border-white/20 hover:bg-white/10 flex items-center justify-center transition-colors">
+                                <i class="fa-solid fa-minus"></i>
+                            </button>
+                            <input type="number" id="quantity" value="1" min="1" max="10" class="w-16 bg-transparent text-center text-xl font-bold focus:outline-none" readonly>
+                            <button type="button" onclick="adjustQuantity(1)" class="w-10 h-10 rounded-full border border-white/20 hover:bg-white/10 flex items-center justify-center transition-colors">
+                                <i class="fa-solid fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Datos Personales -->
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Nombre Completo</label>
+                        <input type="text" required class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 focus:border-brand-purple focus:ring-1 focus:ring-brand-purple outline-none transition-all placeholder-slate-600" placeholder="Ej: Juan Pérez">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-slate-300 mb-2">Correo Electrónico</label>
+                        <input type="email" required class="w-full bg-black/30 border border-white/10 rounded-lg px-4 py-3 focus:border-brand-purple focus:ring-1 focus:ring-brand-purple outline-none transition-all placeholder-slate-600" placeholder="juan@ejemplo.com">
+                    </div>
+
+                    <!-- Total -->
+                    <div class="pt-4 mt-4 border-t border-white/10 flex justify-between items-end">
+                        <span class="text-slate-400 font-medium">Total a Pagar</span>
+                        <span id="totalPrice" class="text-3xl font-bold text-white">$85</span>
+                    </div>
+
+                    <!-- Botón Pagar -->
+                    <button type="submit" id="payButton" class="w-full bg-gradient-to-r from-brand-purple to-brand-pink text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-purple-500/25 transition-all mt-4 flex justify-center items-center gap-2">
+                        <span>Pagar Ahora</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notificación Toast -->
+    <div id="toast" class="fixed top-24 right-4 bg-green-500/90 backdrop-blur text-white px-6 py-4 rounded-xl shadow-2xl transform translate-x-full transition-transform duration-300 z-50 flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-xl"></i>
+        <div>
+            <h4 class="font-bold">¡Compra Exitosa!</h4>
+            <p class="text-sm text-green-100">Tus entradas han sido enviadas.</p>
+        </div>
+    </div>
+
+    <script>
+        // --- EFECTO DE CURSOR GLOW (NUEVO) ---
+        const cursorGlow = document.getElementById('cursor-glow');
+        document.addEventListener('mousemove', (e) => {
+            // Actualizamos la posición transform
+            // translate = posición del mouse
+            cursorGlow.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+        });
+
+        // --- EFECTO DE TRANSICIÓN DE SECCIONES (Observer) ---
+        const observerOptions = {
+            root: null,
+            rootMargin: '-20% 0px -20% 0px', // Activa cuando la sección está en el centro 60% de la pantalla
+            threshold: 0.15
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active-section');
+                } else {
+                    entry.target.classList.remove('active-section');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.scroll-section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // --- Lógica del Estado (CARRITO) ---
+        let state = {
+            ticketType: '',
+            basePrice: 0,
+            quantity: 1
+        };
+
+        const modal = document.getElementById('checkoutModal');
+        const modalContent = document.getElementById('modalContent');
+        const quantityInput = document.getElementById('quantity');
+        const totalPriceEl = document.getElementById('totalPrice');
+        const payButton = document.getElementById('payButton');
+        const toast = document.getElementById('toast');
+
+        function openModal(type, price) {
+            state.ticketType = type;
+            state.basePrice = price;
+            state.quantity = 1;
+            document.getElementById('modalTicketType').innerText = type;
+            document.getElementById('modalTicketPrice').innerText = `$${price}`;
+            quantityInput.value = 1;
+            updateTotal();
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+            document.body.style.overflow = 'auto';
+        }
+
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        function adjustQuantity(amount) {
+            const newQty = state.quantity + amount;
+            if (newQty >= 1 && newQty <= 10) {
+                state.quantity = newQty;
+                quantityInput.value = newQty;
+                updateTotal();
+            }
+        }
+
+        function updateTotal() {
+            totalPriceEl.innerText = `$${state.basePrice * state.quantity}`;
+        }
+
+        function handlePurchase(e) {
+            e.preventDefault();
+            const originalBtnText = payButton.innerHTML;
+            payButton.disabled = true;
+            payButton.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Procesando...`;
+            setTimeout(() => {
+                payButton.disabled = false;
+                payButton.innerHTML = originalBtnText;
+                closeModal();
+                showSuccessToast();
+                e.target.reset();
+            }, 2000);
+        }
+
+        function showSuccessToast() {
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => { toast.classList.add('translate-x-full'); }, 4000);
+        }
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+    </script>
+</body>
+</html>
